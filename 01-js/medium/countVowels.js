@@ -7,6 +7,15 @@
 
 function countVowels(str) {
     // Your code here
+    let s=str.toLowerCase();
+    let count=0;
+    for(let i=0;i<str.length;i++){
+      if(s[i]=='a'||s[i]=='e'||s[i]=='i'||s[i]=='o'||s[i]=='u') count++;
+    }
+    // console.log(count);
+    return count;
 }
+
+// countVowels("OpenAI");
 
 module.exports = countVowels;
