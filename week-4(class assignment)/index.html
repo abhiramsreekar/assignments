@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Week 4 Revision</title>
+</head>
+<body>
+    <input id="n1" type="text" placeholder="Number 1"><br><br>
+    <input id="n2" type="text" placeholder="Number 2"><br><br>
+    <button onclick="func()">Calculate Sum</button><br><br>
+    <div id="result"></div>
+</body>
+<script>
+    async function func(){
+        let a=parseInt(document.getElementById("n1").value);
+        let b=parseInt(document.getElementById("n2").value);
+        let val=a+b;
+        document.getElementById("result").innerHTML="Sum is "+val;
+    }
+</script>
+</html>
