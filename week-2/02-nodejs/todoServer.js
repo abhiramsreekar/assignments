@@ -39,11 +39,201 @@
 
   Testing the server - run `npm run test-todoServer` command in terminal
  */
-  const express = require('express');
-  const bodyParser = require('body-parser');
+
+//Without using todos.json
+
+// const express = require('express');
+// const bodyParser = require('body-parser');
+
+// const app = express();
+
+// let todos=[];
+
+// app.use(bodyParser.json());
+
+// app.use(express.json());
+
+// app.get("/todos",(req,res)=>{
+//   res.json(todos);
+// });
+
+// app.get("/todos/:id",(req,res)=>{
+//   const todo=todos.find(t => t.id==parseInt(req.params.id));
+//   if(todo){
+//     res.json({todo});
+//   }
+//   else{
+//     res.status(404).json({
+//       Msg:"Not found"
+//     })
+//   }
+// });
+
+// app.post("/todos",(req,res)=>{
+//   let newTitle=req.body.title;
+//   let newDesc=req.body.description;
+//   let newId=Math.floor((Math.random() * 10000) + 1);
+//   const todo={
+//     "id":newId,
+//     "title":newTitle,
+//     "description":newDesc
+//   };
+//   todos.push(todo);
+//   res.json({
+//     "id":newId
+//   })
+// })
+
+// app.put("/todos/:id",(req,res)=>{
+//   const todo=todos.findIndex(t => t.id==parseInt(req.params.id));
+//   if(todo!=-1){
+//     todos[todo].title=req.body.title;
+//     todos[todo].description=req.body.description;
+//     res.json({
+//       Msg:"The todo has been updated"
+//     })
+//   }
+//   else{
+//     res.status(404).json({
+//       Msg:"Item not found"
+//     })
+//   }
+// });
+
+// app.delete("/todos/:id",(req,res)=>{
+//   const todoIndex=todos.findIndex(t=> t.id===parseInt(req.params.id));
+//   if(todoIndex!=-1){
+//     todos.splice(todoIndex,1);
+//     res.json({
+//       msg:"Element deleted"
+//     })
+//   }
+//   else{
+//     res.status(404).json({
+//       msg:"Element not found"
+//     })
+//   }
+// });  
+
+// app.all("*",(req,res)=>{
+//   res.json({
+//     msg:"Invalid request"
+//   })
+// });
+
+// app.listen(3000);
+
+//With todos.json
+const express = require('express');
+const bodyParser = require('body-parser');
+const fs = require("fs");
+
+const app = express();
+
+app.use(bodyParser.json());
+
+app.use(express.json());
+
+app.get("/todos", (req, res) => {
+  fs.readFile("todos.json", "utf-8", (err, data) => {
+    if (err) {
+      res.status(404).json({
+        msg: "Error found"
+      })
+    } else {
+      res.json(JSON.parse(data));
+    }
+  });
+});
+
+app.get("/todos/:id", (req, res) => {
+  fs.readFile("todos.json", "utf-8", (err, data) => {
+    const todos = JSON.parse(data);
+    const todo = todos.find(t => t.id == parseInt(req.params.id));
+    if (todo) {
+      res.json({ todo });
+    }
+    else {
+      res.status(404).json({
+        Msg: "Not found"
+      })
+    }
+  })
+});
+
+app.post("/todos", (req, res) => {
+  fs.readFile("todos.json", "utf-8", (err, data) => {
+    if (err) {
+      res.status(404).json({
+        msg: "Error occurred"
+      })
+    }
+    else {
+      let todos = JSON.parse(data);
+      let newTitle = req.body.title;
+      let newDesc = req.body.description;
+      let newId = Math.floor((Math.random() * 10000) + 1);
+      const todo = {
+        "id": newId,
+        "title": newTitle,
+        "description": newDesc
+      };
+      todos.push(todo);
+      fs.writeFile("todos.json",JSON.stringify(todos),(err)=>{
+        if(err){
+          res.status(404).json({
+            msg:"Error found"
+          });
+        }
+        else{
+          res.json({
+            msg:"File is now updated"
+          })
+        }
+      })
+    }
+  });
+
   
-  const app = express();
-  
-  app.use(bodyParser.json());
-  
-  module.exports = app;
+})
+
+app.put("/todos/:id", (req, res) => {
+  const todo = todos.findIndex(t => t.id == parseInt(req.params.id));
+  if (todo != -1) {
+    todos[todo].title = req.body.title;
+    todos[todo].description = req.body.description;
+    res.json({
+      Msg: "The todo has been updated"
+    })
+  }
+  else {
+    res.status(404).json({
+      Msg: "Item not found"
+    })
+  }
+});
+
+app.delete("/todos/:id", (req, res) => {
+  const todoIndex = todos.findIndex(t => t.id === parseInt(req.params.id));
+  if (todoIndex != -1) {
+    todos.splice(todoIndex, 1);
+    res.json({
+      msg: "Element deleted"
+    })
+  }
+  else {
+    res.status(404).json({
+      msg: "Element not found"
+    })
+  }
+});
+
+app.all("*", (req, res) => {
+  res.json({
+    msg: "Invalid request"
+  })
+});
+
+app.listen(3000);
+
+module.exports = app;
